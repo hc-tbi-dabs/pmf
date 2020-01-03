@@ -8,20 +8,21 @@ library(DT)
 
 # recommendation <- read.csv('recommendation.csv',stringsAsFactors = F,header=T)
 
-x<- "Account 	Product 	Region 	Revenue
-AxisBank 	FBB 	North 	2000
-HSBC 	FBB 	South 	30000
-SBI 	FBB 	East 	1000
-ICICI 	FBB 	West 	1000
-BandhanBank 	FBB 	West 	200
-AxisBank 	SIMO 	North 	200
-HSBC 	SIMO 	South 	300
-SBI 	SIMO 	East 	100
-ICICI 	SIMO 	West 	100
-BandhanBank 	SIMO 	West 	200"
+x<- "Engagement 	Type 	Province 	Individuals
+Presentation 	LIVE 	ON 	29
+Conference 	LIVE 	BC 	32
+Workshop 	LIVE 	AB 	11
+Presentation 	LIVE 	QC 	19
+Conference 	LIVE 	MB 	22
+Workshop 	WEBEX 	ON 	25
+Other 	WEBEX 	BC 	34
+Other 	WEBEX 	AB 	19
+Conference 	WEBEX 	QC 	14
+Workshop 	WEBEX 	MB 	23"
 
 
 recommendation <- read.table(text = x, header = TRUE, sep = " ")
+
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
@@ -30,47 +31,55 @@ shinyServer(function(input, output) {
     # create the server functions for the dashboard  
 
     #some data manipulation to derive the values of KPI boxes
-    total.revenue <- sum(recommendation$Revenue)
-    sales.account <- recommendation %>% group_by(Account) %>% summarise(value = sum(Revenue)) %>% filter(value==max(value))
-    prof.prod <- recommendation %>% group_by(Product) %>% summarise(value = sum(Revenue)) %>% filter(value==max(value))
+    total.Individuals <- sum(recommendation$Individuals)
+    sales.Engagement <- recommendation %>% 
+      group_by(Engagement) %>% 
+      summarise(value = sum(Individuals)) %>% 
+      filter(value==max(value))
+    prof.prod <- recommendation %>% 
+      group_by(Type) %>% 
+      summarise(value = sum(Individuals)) %>% 
+      filter(value==max(value))
     #creating the valueBoxOutput content
     output$value1 <- renderValueBox({
         valueBox(
-            formatC(sales.account$value, format="d", big.mark=',')
-            ,paste('Top Account:',sales.account$Account)
+            formatC(sales.Engagement$value, format="d", big.mark=',')
+            ,paste('Top Engagement:',sales.Engagement$Engagement)
             ,icon = icon("stats",lib='glyphicon')
             ,color = "purple")  
     })
     output$value2 <- renderValueBox({ 
         valueBox(
-            formatC(total.revenue, format="d", big.mark=',')
-            ,'Total Expected Revenue'
+            formatC(total.Individuals, format="d", big.mark=',')
+            ,'Total Expected Individuals'
             ,icon = icon("gbp",lib='glyphicon')
             ,color = "green")  
     })
     output$value3 <- renderValueBox({
         valueBox(
             formatC(prof.prod$value, format="d", big.mark=',')
-            ,paste('Top Product:',prof.prod$Product)
+            ,paste('Top Type:',prof.prod$Type)
             ,icon = icon("menu-hamburger",lib='glyphicon')
             ,color = "yellow")   
     })
     #creating the plotOutput content
-    output$revenuebyPrd <- renderPlot({
+    output$IndividualsbyPrd <- renderPlot({
         ggplot(data = recommendation, 
-               aes(x=Product, y=Revenue, fill=factor(Region))) + 
-            geom_bar(position = "dodge", stat = "identity") + ylab("Revenue (in Euros)") + 
-            xlab("Product") + theme(legend.position="bottom" 
+               aes(x=Type, y=Individuals, fill=factor(Province))) + 
+            geom_bar(position = "dodge", stat = "identity") + ylab("Number of Participants") + 
+            xlab("Type") + theme(legend.position="bottom" 
                                     ,plot.title = element_text(size=15, face="bold")) + 
-            ggtitle("Revenue by Product") + labs(fill = "Region")
+            # ggtitle("Individuals by Type") + 
+        labs(fill = "Province")
     })
-    output$revenuebyRegion <- renderPlot({
+    output$IndividualsbyProvince <- renderPlot({
         ggplot(data = recommendation, 
-               aes(x=Account, y=Revenue, fill=factor(Region))) + 
-            geom_bar(position = "dodge", stat = "identity") + ylab("Revenue (in Euros)") + 
-            xlab("Account") + theme(legend.position="bottom" 
+               aes(x=Engagement, y=Individuals, fill=factor(Province))) + 
+            geom_bar(position = "dodge", stat = "identity") + ylab("Number of Participants") + 
+            xlab("Engagement") + theme(legend.position="bottom" 
                                     ,plot.title = element_text(size=15, face="bold")) + 
-            ggtitle("Revenue by Region") + labs(fill = "Region")
+            # ggtitle("Individuals by Province") + 
+        labs(fill = "Province")
     })
     
     ##AS

@@ -1,4 +1,6 @@
 # Excel Password:EHPPMF
+# My address: http://10.138.24.111:8888/
+
 library(shiny)
 require(shinydashboard)
 library(ggplot2)
@@ -10,19 +12,19 @@ library(DT)
 
 # recommendation <- read.csv('recommendation.csv',stringsAsFactors = F,header=T)
 
-x<- "Account 	Product 	Region 	Revenue
-AxisBank 	FBB 	North 	2000
-HSBC 	FBB 	South 	30000
-SBI 	FBB 	East 	1000
-ICICI 	FBB 	West 	1000
-BandhanBank 	FBB 	West 	200
-AxisBank 	SIMO 	North 	200
-HSBC 	SIMO 	South 	300
-SBI 	SIMO 	East 	100
-ICICI 	SIMO 	West 	100
-BandhanBank 	SIMO 	West 	200"
+x<- "Engagement 	Type 	Region 	Revenue
+Presentation 	LIVE 	ON 	29
+Conference 	LIVE 	BC 	32
+Workshop 	LIVE 	AB 	11
+Presentation 	LIVE 	QC 	19
+Conference 	LIVE 	MB 	22
+Workshop 	WEBEX 	ON 	25
+Other 	WEBEX 	BC 	34
+Other 	WEBEX 	AB 	19
+Conference 	WEBEX 	QC 	14
+Workshop 	WEBEX 	MB 	23"
 
-recommendation <- read.table(text = x, header = TRUE, sep = " ")
+recommendation <- read.table(text = x, header = TRUE, sep = " ", stringsAsFactors = FALSE)
 
 
 
@@ -56,18 +58,18 @@ dashboardPage(
                         valueBoxOutput("value2"),
                         valueBoxOutput("value3"),
                         box(
-                            title = "Revenue per Account",
+                            title = "Individuals who attended LIVE or via WEBEX",
                             status = "primary",
                             solidHeader = TRUE, 
                             collapsible = TRUE, 
-                            plotOutput("revenuebyPrd", height = "300px")
+                            plotOutput("IndividualsbyPrd", height = "300px")
                         ),
                         box(
-                            title = "Revenue per Product",
+                            title = "Individuals by type of engagement",
                             status = "primary",
                             solidHeader = TRUE, 
                             collapsible = TRUE, 
-                            plotOutput("revenuebyRegion", height = "300px")
+                            plotOutput("IndividualsbyProvince", height = "300px")
                         ) 
                     )),
             
